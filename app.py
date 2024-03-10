@@ -154,13 +154,17 @@ def compare_proposals(prop, count):
 
 
 if __name__ == '__main__':
+    print('start')
     event = threading.Event()
     model = SentenceTransformer('sentence-transformers/msmarco-bert-base-dot-v5')
+    print('model downloaded')
 
     df = pd.DataFrame(columns=['content', 'status', 'ksm'])
     df_emb = pd.DataFrame(columns=['content'])
 
+    print('proposal collection start')
     get_proposals()
+    print('proposals collected, embeddings calculation start')
     get_embeddings()
 
     POST_ID = len(df)
@@ -171,6 +175,7 @@ if __name__ == '__main__':
     update_thread.start()
     upd_emb_thread.start()
 
+    print('gradio start')
     with gr.Blocks() as demo:
         gr.Markdown("<h1>Compare proposals</h1>")
         inpt = gr.Textbox(label="Input Proposal", lines=5, max_lines=12)
