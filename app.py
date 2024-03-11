@@ -11,6 +11,8 @@ import nltk
 from nltk.tokenize import sent_tokenize
 import string
 import unicodedata
+import time
+
 
 nltk.download('punkt')
 POST_ID = 0
@@ -113,6 +115,7 @@ def update_proposals():
             df.loc[POST_ID] = line
             POST_ID += 1
         else:
+            print('proposals updated at {t}'.format(t=time.strftime("%H:%M:%S", time.localtime())))
             event.set()
             flag = False
 
@@ -134,7 +137,7 @@ def update_embeddings():
 
 def run_periodically():
     update_proposals()
-    threading.Timer(UPDATE_INTERVAL, run_periodically, args=(UPDATE_INTERVAL,)).start()
+    threading.Timer(UPDATE_INTERVAL, run_periodically).start()
 
 
 def compare_proposals(prop, count):
