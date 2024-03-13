@@ -87,6 +87,7 @@ def get_proposals():
             f"https://api.polkassembly.io/api/v1/posts/on-chain-post?proposalType={REFERENDUM_TYPE}&postId={POST_ID}",
             headers={"x-network": "kusama"})
         if rn.ok:
+            print(POST_ID)
             proposal_data = rn.json()
             line = [proposal_data.get("content"), proposal_data.get("status"), get_sum(proposal_data.get("content"))]
             df.loc[POST_ID] = line
