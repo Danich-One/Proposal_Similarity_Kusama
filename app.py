@@ -150,7 +150,6 @@ def compare_proposals(prop, count):
     res = [df.iloc[x]['content'] for x in best_match]
     stat = [df.iloc[x]['status'] for x in best_match]
     ksm = [df.iloc[x]['ksm'] for x in best_match]
-    # total = [get_sum(y) for y in [df.iloc[x]['content'] for x in best_match]]
     title = [
         '''<span style="color:blue"><h2>Total KSM requested: {sum}, status: {status}, ID: {id}</h2></span> \n '''.format(
             sum=x, status=y, id=z) for x, y, z in zip(ksm, stat, best_match)]
