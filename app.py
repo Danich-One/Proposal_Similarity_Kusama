@@ -14,7 +14,6 @@ import unicodedata
 import time
 
 
-
 nltk.download('punkt')
 POST_ID = 0
 REFERENDUM_TYPE = "referendums_v2"
