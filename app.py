@@ -13,7 +13,6 @@ import string
 import unicodedata
 import time
 
-
 nltk.download('punkt')
 POST_ID = 0
 REFERENDUM_TYPE = "referendums_v2"
@@ -99,7 +98,7 @@ def get_proposals():
 def get_embeddings():
     global df_emb
     for i in range(len(df)):
-        df_emb.loc[i] = [model.encode(markdn_2_str(df.iloc[i]['content']))]
+        df_emb.loc[i] = model.encode(markdn_2_str(df.iloc[i]['content']))
 
 
 def update_proposals():
@@ -117,6 +116,7 @@ def update_proposals():
             POST_ID += 1
         else:
             print('proposals updated at {t}'.format(t=time.strftime("%H:%M:%S", time.localtime())))
+            df.to_excel('df.xlsx', index=False)
             event.set()
             flag = False
 
@@ -125,15 +125,17 @@ def update_embeddings():
     global df_emb
     while True:
         event.wait()
-        print(POST_ID)
-        print(len(df))
 
         if len(df) != len(df_emb):
             id_to_add = [x + len(df_emb) for x in range(len(df) - len(df_emb))]
             for i in id_to_add:
-                df_emb.loc[i] = [model.encode(markdn_2_str(df.iloc[i]['content']))]
+                print(model.encode(markdn_2_str(df.iloc[i])))
+                print(len(model.encode(markdn_2_str(df.iloc[i]))))
+                df_emb.loc[i] = model.encode(markdn_2_str(df.iloc[i]))
         else:
             event.clear()
+            df_emb.to_csv('df_emb.csv', index=False)
+
 
 
 def run_periodically():
@@ -144,7 +146,7 @@ def run_periodically():
 def compare_proposals(prop, count):
     query_emb = model.encode(markdn_2_str(prop))
     new_df = pd.DataFrame(columns=['sim1'])
-    new_df['sim1'] = df_emb.apply(lambda row: dot_product(row[0], query_emb), axis=1)
+    new_df['sim1'] = df_emb.apply(lambda row: dot_product(row, query_emb), axis=1)
     best_match = np.argsort(-new_df['sim1'])[0:count]
     res = [df.iloc[x]['content'] for x in best_match]
     stat = [df.iloc[x]['status'] for x in best_match]
@@ -163,12 +165,22 @@ if __name__ == '__main__':
     print('model downloaded')
 
     df = pd.DataFrame(columns=['content', 'status', 'ksm'])
-    df_emb = pd.DataFrame(columns=['content'])
+    df_emb = pd.DataFrame(columns=range(768))
+    print(df_emb)
 
-    print('proposal collection start')
-    get_proposals()
-    print('proposals collected, embeddings calculation start')
-    get_embeddings()
+
+    df = pd.read_excel('df.xlsx')
+    df_emb = pd.read_csv('df_emb.csv')
+    df = df.loc[:, ['content', 'status', 'ksm']]
+
+    # get_proposals()
+    # get_embeddings()
+
+    # df.to_excel('df.xlsx', index=False)
+    # df_emb.to_csv('df_emb.csv', index=False)
+
+
+
 
     POST_ID = len(df)
 
