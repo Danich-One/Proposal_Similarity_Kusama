@@ -129,12 +129,11 @@ def update_embeddings():
         if len(df) != len(df_emb):
             id_to_add = [x + len(df_emb) for x in range(len(df) - len(df_emb))]
             for i in id_to_add:
-                print(model.encode(markdn_2_str(df.iloc[i])))
-                print(len(model.encode(markdn_2_str(df.iloc[i]))))
                 df_emb.loc[i] = model.encode(markdn_2_str(df.iloc[i]))
         else:
-            event.clear()
+            print('embeddings updated at {t}'.format(t=time.strftime("%H:%M:%S", time.localtime())))
             df_emb.to_csv('df_emb.csv', index=False)
+            event.clear()
 
 
 
@@ -179,9 +178,6 @@ if __name__ == '__main__':
     # df.to_excel('df.xlsx', index=False)
     # df_emb.to_csv('df_emb.csv', index=False)
 
-
-
-
     POST_ID = len(df)
 
     update_thread = threading.Thread(target=run_periodically)  # background proposals update
@@ -203,4 +199,4 @@ if __name__ == '__main__':
         otpt = gr.Markdown("")
         btn.click(fn=compare_proposals, inputs=[inpt, slider], outputs=otpt)
 
-    demo.launch(show_error=True)
+    demo.launch()
